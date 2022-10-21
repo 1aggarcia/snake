@@ -1,4 +1,15 @@
 body {
     font-family: "Arial";
-    background-color: #a8a632;
+    background-color: #ade8e9;
+    padding: 2px;
+}
+
+.grid td {
+    border-style: dotted;
+    width: 20px;
+    height: 20px;
+}
+
+.s_block {
+    background-color: #000000;
 }
