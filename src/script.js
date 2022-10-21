@@ -1,5 +1,3 @@
-//import {Snake} from "snake.js";
-
 const ROW = "r";
 const COL = "c";
 const WIDTH = 20;
@@ -7,6 +5,14 @@ const HEIGHT = 15;
 
 function main() {
     build_grid(WIDTH, HEIGHT);
+
+    let snake = new Snake();
+    let tick_btn = document.getElementById("tick_btn")
+    let dir_btn = document.getElementsByClassName("dir_btn");
+
+    tick_btn.onclick = function() { snake.tick(); }
+    dir_btn.onclick = function() { snake.redirect(dir_btn.id); }
+    
 }
 
 function build_grid(width, height) {
@@ -24,21 +30,7 @@ function build_grid(width, height) {
     }
 
     table.innerHTML = html;
-    init_snake();
-}
 
-function init_snake() {
-    let r = Math.floor(HEIGHT / 2);
-    let c = Math.floor(WIDTH / 2);
-    let start_len = 3;
-    let head_id;
-    let head;
-
-    for (let i = 0; i < start_len; i++) {
-        head_id = ROW + (r+i) + COL + c;
-        head = document.getElementById(head_id);
-        head.className = "s_block";
-    }
 }
 
 main();
