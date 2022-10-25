@@ -4,12 +4,25 @@ body {
     padding: 2px;
 }
 
+.content {
+    text-align: center;
+}
+
+.grid {
+    background-color: #fff200;
+    border-style: solid;
+    margin:auto;
+}
+
 .grid td {
-    border-style: dotted;
     width: 20px;
     height: 20px;
 }
 
 .s_block {
     background-color: #000000;
+}
+
+.f_block {
+    background-color: red;
 }
