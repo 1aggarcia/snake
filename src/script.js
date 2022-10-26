@@ -3,6 +3,11 @@ const UP_KEY = 38;
 const RIGHT_KEY = 39;
 const DOWN_KEY = 40;
 
+const A_KEY = 65;
+const W_KEY = 87;
+const D_KEY = 68;
+const S_KEY = 83;
+
 const LOW_SPEED = 120;
 const MED_SPEED = 80;
 const HIGH_SPEED = 50;
@@ -80,26 +85,27 @@ function tick(blocks, direction) {
 // Read key press, change direction if needed
 function checkKey(e) {
     e = e || window.event;
-    let direction;
+    let direction = [0, 0];
 
     switch(e.keyCode) {
         case LEFT_KEY:
+        case A_KEY:
             direction = [0, -1];
             break;
         case UP_KEY:
+        case W_KEY:
             direction = [-1, 0];
             break;
         case RIGHT_KEY:
+        case D_KEY:
             direction = [0, 1];
             break;
         case DOWN_KEY:
+        case S_KEY:
             direction = [1, 0];
             break;
-        default:
-            direction = [0, 0];
     }
 
-    console.log("Direction: " + direction);
     return direction;
 
 }
