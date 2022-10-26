@@ -33,7 +33,7 @@ async function run_snake() {
     document.onkeydown = function(){ direction = checkKey() };
 
     // Tick loop
-    while (alive = true) {
+    while (blocks.length > 1) {
         await delay(MED_SPEED);
         blocks = tick(blocks, direction); // move head, add to block array
 
@@ -47,6 +47,8 @@ async function run_snake() {
             clear_block(tail);
         }
     }
+
+    document.getElementById("header").innerHTML = "YOU DIED (Ctrl + R)";
 }
 
 // Move head of snake forward
@@ -57,7 +59,18 @@ function tick(blocks, direction) {
     coords[0] = parseInt(coords[0]) + direction[0]; // Shift y down by direction[0]
     coords[1] = parseInt(coords[1]) + direction[1]; // Shift x right by direction[1]
 
+    // Kill snake if head is out of bounds
+    if (0 >= coords[0] || coords[0] > HEIGHT || 0 >= coords[1] || coords[1] > WIDTH) {
+        return ["1:1"];
+    }
+
     head = coords[0] + SEPARATOR + coords[1];
+
+    // Kill snake it head runs into body
+    if (blocks.includes(head)) {
+        return ["1:1"];
+    }
+
     blocks = [head].concat(blocks);
     fill_block(head, false);
 
@@ -67,7 +80,7 @@ function tick(blocks, direction) {
 // Read key press, change direction if needed
 function checkKey(e) {
     e = e || window.event;
-    let direction = [];
+    let direction;
 
     switch(e.keyCode) {
         case LEFT_KEY:
@@ -81,6 +94,9 @@ function checkKey(e) {
             break;
         case DOWN_KEY:
             direction = [1, 0];
+            break;
+        default:
+            direction = [0, 0];
     }
 
     console.log("Direction: " + direction);
