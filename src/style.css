@@ -5,9 +5,11 @@ body {
     padding: 2px;
 }
 
-.content {
-    text-align: center;
-}
+a:link { color: #c6c6c6; }
+a:visited { color: #c6c6c6; }
+a:hover { color: #ffff00; }
+
+.content { text-align: center; }
 
 .grid {
     background-color: #0a5153;
@@ -20,10 +22,5 @@ body {
     height: 20px;
 }
 
-.s_block {
-    background-color: #ffff00;
-}
-
-.f_block {
-    background-color: #ff0000;
-}
+.s_block { background-color: #ffff00; }
+.f_block { background-color: #ff0000; }
