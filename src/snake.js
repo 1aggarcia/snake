@@ -42,7 +42,8 @@ class Snake {
         }
         
         fill_block(this.food, true);
-        document.onkeydown = e => checkKey(e, snake);
+        document.addEventListener("keydown", e => checkKey(e, snake));
+        //document.onkeydown = e => checkKey(e, snake);
 
         // Tick loop
         while (this.alive) {
