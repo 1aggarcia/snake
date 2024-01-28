@@ -34,7 +34,7 @@ class Snake {
 
         start_btn.disabled = true;
         difficulty.disabled = true;
-        header.innerHTML = "snek";
+        header.innerHTML = "Snake";
         scorebox.innerHTML = 0;
 
         for (let i = 0; i < this.blocks.length; i++) {
@@ -42,7 +42,7 @@ class Snake {
         }
         
         fill_block(this.food, true);
-        document.onkeydown = function(e){ checkKey(e, snake) };
+        document.onkeydown = e => checkKey(e, snake);
 
         // Tick loop
         while (this.alive) {
@@ -83,8 +83,8 @@ class Snake {
         if (0 >= coords[0] || coords[0] > HEIGHT || 0 >= coords[1] || coords[1] > WIDTH) {
             // Kill snake if head is out of bounds
             this.alive = false;
-        } else if (old_blocks.includes(head)) { // if snake runs into itself
-            if (head == old_blocks[1]) {
+        } else if (this.blocks.includes(head)) { // if snake runs into itself
+            if (head == this.blocks[1]) {
                 // if snake reverses direction, reverse it back
                 this.invertDirection();
                 this.tick();
@@ -95,7 +95,7 @@ class Snake {
             }
         } else {
             fill_block(head, false);
-            this.blocks = [head].concat(old_blocks);
+            this.blocks.unshift(head); //= [head].concat(old_blocks);
         }
     }
 
@@ -106,7 +106,6 @@ class Snake {
         let food = row + SEPARATOR + col;
 
         // regenerate location if location overlaps with snake
-        // console.logging bc its a rare occurence, I wanna see it happen
         if (this.blocks.includes(food)) {
             console.log("Food Regen (food position was on the snake)");
             return this.gen_food();
@@ -131,7 +130,7 @@ class Snake {
     // Reverse direction of snake
     invertDirection() {
         this.direction[0] *= -1;
-        this.direction[1] *= -1;
+        this.direction[1] *= -1;       
     }
 }
 

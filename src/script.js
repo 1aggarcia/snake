@@ -3,23 +3,21 @@ const HEIGHT = 15;
 const SEPARATOR = ":";
 const START_LEN = 3;
 
-const LOW_SPEED = 120;
-const MED_SPEED = 80;
-const HIGH_SPEED = 50;
+const SPACE_KEY = 32;
 
 // Run a new game, clean up existing one
-function new_game(highscore) {
+async function new_game(highscore) {
     clear_grid(WIDTH, HEIGHT);
 
     let difficulty = document.getElementById("difficulty").value;
     let snake = new Snake(START_LEN, parseInt(difficulty));
-    snake.run();
+    const score = await snake.run();
 
-    return snake.score;
+    return score;
 }
 
 // Generate HTML for table
-// totally uneccesary but otherwise the HTML file would be 1000 pages long
+// totally uneccesary but otherwise the HTML file would be really long
 function build_grid(width, height) {
     let table = document.getElementById("grid");
     let id;
@@ -53,6 +51,17 @@ function clear_grid(width, height) {
     }
 }
 
+// Start new game if space presseed
+function checkSpace(k) {
+    k = k || window.event;
+
+    console.log("keypress out of game")
+    if  (k.keyCode == SPACE_KEY) {
+        console.log("Space pressed")
+        new_game();
+    }
+}
+
 // yesh
 function main() {
     let start_btn = document.getElementById("start_btn");
@@ -60,7 +69,17 @@ function main() {
 
     build_grid(WIDTH, HEIGHT);
 
-    start_btn.onclick = function() { highscore = new_game(highscore) };
+    document.onkeydown = k => checkSpace(k);
+    start_btn.onclick = () => {
+        new_game()
+            .then(score => {
+                if (score > highscore) {
+                    highscore = score;
+                    document.querySelector("#highscore").innerText = score;
+                }
+            })
+            .catch(err => console.error(err));
+    };
 }
 
 main();
