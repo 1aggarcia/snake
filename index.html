@@ -1,37 +1,53 @@
 <!DOCTYPE html>
 <head>
-    <title>Snake v2024.0127</title>
+    <title>Snake v2024.0216</title>
     <link rel="stylesheet" href="src/style.css"/>
     <link rel="shortcut icon" href="src/snake.ico" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     
 </head>
 <body>
-<div class="content">
-    <h2 id="header">Snake (Press Space)</h2>
-    <table class="grid" id="grid">
-    </table>
-    <br>
-    <span>
-        Score: <span id="scorebox">0</span>
-        <button id="start_btn">Start</button>
-        High Score: <span id="highscore">0</span>
-    </span>
-    <br>
-    <p>
-        Difficulty: 
-        <select id="difficulty">
+
+<div id="menu">
+    <h2 id="header" style="margin: 10px auto;">Snake (Press Space)</h2> 
+
+    <p style="margin: 5px auto;">High Score: <span id="highscore">0</span></p>
+
+    <div style="margin: 10px auto">
+        <label for="difficulty">Difficulty:</label> 
+        <select name="difficulty" id="difficulty">
             <option value="120">Easy</option>
             <option value="80" selected="true">Normal</option>
             <option value="50">Hard</option>
             <option value="30">Impossible</option>
         </select>
-    </p>
-    <a href="https://github.com/1aggarcia/snake" target="_blank">Source Code</a>
-    &nbsp;
-    <a href="https://bit.ly/3FiO7ka" target="_blank">Don't click this link</a>
+    </div>
+
+    <div style="margin: 10px auto">
+        <label for="blockSize">
+            Size: <span id="blockSizeVal">30</span>
+        </label>
+        <input type="range" name="blockSize" id="blockSize" min="20" max="60"
+            value="30" />
+    </div>
+
+    <button id="start_btn">Start</button>
 </div>
+
+<main>
+    <table class="grid" id="grid">
+    </table>
+
+    <footer>
+        <a href="https://github.com/1aggarcia/snake" target="_blank">Source Code</a>
+        &nbsp;
+        <b>Score: <span id="scorebox">0</span></b>
+        &nbsp;
+        <a href="https://bit.ly/3FiO7ka" target="_blank">Don't click this link</a> 
+    </footer>
+</main>
+
 <script src="src/snake.js"></script>
-<script src="src/script.js"></script>
+<script src="src/main.js"></script>
 </body>
 </html>

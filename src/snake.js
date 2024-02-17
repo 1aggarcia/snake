@@ -1,16 +1,40 @@
-const LEFT_KEY = 37;
-const UP_KEY = 38;
-const RIGHT_KEY = 39;
-const DOWN_KEY = 40;
-
-const W_KEY = 87;
-const A_KEY = 65;
-const S_KEY = 83;
-const D_KEY = 68;
-
 const POINTS = 50;
 const SNAKE_CLASS = "s_block";
 const FOOD_CLASS = "f_block";
+
+/*
+
+Versión funcional:
+
+runSnakeGame() {
+    snake = genSnake(3)
+    xDir = 0
+    yDir = 0
+    score = 0
+    alive = T
+
+    addEventListener(changeDir)
+
+    while (alive) {
+        sleep()
+        snake = advance(xDir, yDir)
+
+        if (dead()) {
+            alive = F
+            break
+        }
+
+        if (eating()) {
+            point ++
+        }
+
+        redraw(snake)
+    }
+
+    return score;
+}
+
+*/
 
 class Snake {
     // Constructor for Snake class
@@ -30,7 +54,6 @@ class Snake {
         let start_btn = document.getElementById("start_btn");
         let header = document.getElementById("header");
         let difficulty = document.getElementById("difficulty");
-        let snake = this
 
         start_btn.disabled = true;
         difficulty.disabled = true;
@@ -42,8 +65,14 @@ class Snake {
         }
         
         fill_block(this.food, true);
-        document.addEventListener("keydown", e => checkKey(e, snake));
-        //document.onkeydown = e => checkKey(e, snake);
+        // document.addEventListener("keydown", e => checkKey(e, snake));
+        document.addEventListener("keydown", e => {
+            const direction = readDirectionFromKey(e);
+
+            if (direction !== null) {
+                this.direction = direction;
+            }
+        })
 
         // Tick loop
         while (this.alive) {
@@ -63,7 +92,7 @@ class Snake {
         }
 
         // Game over stuff
-        header.innerHTML = "YOU DIED";
+        header.innerHTML = "GAME OVER";
         start_btn.innerHTML = "Restart";
         start_btn.disabled = false;
         difficulty.disabled = false;
@@ -135,33 +164,30 @@ class Snake {
     }
 }
 
-// Read key press, change direction if needed
-function checkKey(e, snake) {
-    e = e || window.event;
-
-    switch(e.keyCode) {
-        case LEFT_KEY:
-        case A_KEY:
-            snake.direction = [0, -1];
-            break;
-        case UP_KEY:
-        case W_KEY:
-            snake.direction = [-1, 0];
-            break;
-        case RIGHT_KEY:
-        case D_KEY:
-            snake.direction = [0, 1];
-            break;
-        case DOWN_KEY:
-        case S_KEY:
-            snake.direction = [1, 0];
-            break;
-        case 81: // secret key 1
-            snake.direction = [-1, -1];
-            break;
-        case 69: // secret key 2
-            snake.direction = [-1, 1];
-            break
+/**
+ * Interpret a key press as either a new direction or null,
+ * if the keypress does not coorespond to a key
+ */
+function readDirectionFromKey(e) {
+    switch(e.code) {
+        case "ArrowLeft":
+        case "KeyA":
+            return [0, -1];
+        case "ArrowUp": 
+        case "KeyW":
+            return [-1, 0];
+        case "ArrowRight":
+        case "KeyD":
+            return [0, 1];
+        case "ArrowDown":
+        case "KeyS":
+            return [1, 0];
+        case "KeyQ": // secret key 1
+            return [-1, -1];
+        case "KeyE": // secret key 2
+            return [-1, 1];
+        default:
+            return null;
     }
 }
 
