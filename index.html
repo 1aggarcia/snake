@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <head>
     <title>Snake v2024.0216</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <link rel="stylesheet" href="src/style.css"/>
     <link rel="shortcut icon" href="src/snake.ico" type="image/x-icon" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     
 </head>
@@ -27,7 +30,7 @@
         <label for="blockSize">
             Size: <span id="blockSizeVal">30</span>
         </label>
-        <input type="range" name="blockSize" id="blockSize" min="20" max="60"
+        <input type="range" name="blockSize" id="blockSize" min="15" max="60"
             value="30" />
     </div>
 
@@ -37,6 +40,15 @@
 <main>
     <table class="grid" id="grid">
     </table>
+
+    <div id="mobileControls">
+        <button id="upBtn"><i class="fa fa-arrow-up"></i></button>
+        <div>
+            <button id="leftBtn"><i class="fa fa-arrow-left"></i></button>
+            <button id="downBtn"><i class="fa fa-arrow-down"></i></button>
+            <button id="rightBtn"><i class="fa fa-arrow-right"></i></button>
+        </div>
+    </div>
 
     <footer>
         <a href="https://github.com/1aggarcia/snake" target="_blank">Source Code</a>

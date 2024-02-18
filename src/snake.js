@@ -2,6 +2,16 @@ const POINTS = 50;
 const SNAKE_CLASS = "s_block";
 const FOOD_CLASS = "f_block";
 
+const scorebox = document.getElementById("scorebox");
+const start_btn = document.getElementById("start_btn");
+const header = document.getElementById("header");
+const difficulty = document.getElementById("difficulty");
+
+const upBtn = document.getElementById("upBtn");
+const downBtn = document.getElementById("downBtn");
+const rightBtn = document.getElementById("rightBtn");
+const leftBtn = document.getElementById("leftBtn");
+
 /*
 
 Versión funcional:
@@ -50,11 +60,6 @@ class Snake {
 
     // Function holding snake vars
     async run() {
-        let scorebox = document.getElementById("scorebox");
-        let start_btn = document.getElementById("start_btn");
-        let header = document.getElementById("header");
-        let difficulty = document.getElementById("difficulty");
-
         start_btn.disabled = true;
         difficulty.disabled = true;
         header.innerHTML = "Snake";
@@ -65,14 +70,21 @@ class Snake {
         }
         
         fill_block(this.food, true);
-        // document.addEventListener("keydown", e => checkKey(e, snake));
         document.addEventListener("keydown", e => {
             const direction = readDirectionFromKey(e);
-
             if (direction !== null) {
                 this.direction = direction;
             }
-        })
+        });
+
+        upBtn.onclick = () => this.direction = [-1, 0];
+
+        downBtn.onclick = () => this.direction = [1, 0];
+
+        rightBtn.onclick = () => this.direction = [0, 1];
+
+        leftBtn.onclick = () => this.direction = [0, -1];
+
 
         // Tick loop
         while (this.alive) {
