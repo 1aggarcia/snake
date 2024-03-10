@@ -16,6 +16,15 @@
 
     <p style="margin: 5px auto;">High Score: <span id="highscore">0</span></p>
 
+    <p style="margin: 5px auto;">LEADERBOARD</p>
+    <div id="leaderboard"></div>
+
+    <form id="leaderboardForm" onsubmit="return false" style="display: none;">
+        <label>Name:</label>
+        <input type="text" name="name" style="margin: 0px 10px;" autocomplete>
+        <button type="submit">Submit Score</button>
+    </form>
+
     <div style="margin: 10px auto">
         <label for="difficulty">Difficulty:</label> 
         <select name="difficulty" id="difficulty">
@@ -24,9 +33,7 @@
             <option value="50">Hard</option>
             <option value="30">Impossible</option>
         </select>
-    </div>
 
-    <div style="margin: 10px auto">
         <label for="blockSize">
             Size: <span id="blockSizeVal">30</span>
         </label>
@@ -34,7 +41,7 @@
             value="30" />
     </div>
 
-    <button id="start_btn">Start</button>
+    <button id="start_btn" style="margin: 5px 0px;">Start</button>
 </div>
 
 <main>
@@ -59,7 +66,8 @@
     </footer>
 </main>
 
-<script src="src/snake.js"></script>
-<script src="src/main.js"></script>
+<script src="scripts/leaderboard.js"></script>
+<script src="scripts/snake.js"></script>
+<script src="scripts/main.js"></script>
 </body>
 </html>

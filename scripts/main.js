@@ -3,26 +3,34 @@ const HEIGHT = 15;
 const SEPARATOR = ":";
 const START_LEN = 3;
 
+const USERNAME_MIN = 3;
+const USERNAME_MAX = 60;
+
 const highscoreKey = "1aggarciasnake_highscore";
 
+const DOM = {
+    header: document.getElementById("header"),
+    startBtn: document.getElementById("start_btn"),
+    highscoreBox: document.getElementById("highscore"),
+    grid: document.getElementById("grid"),
+    menu: document.getElementById("menu"),
+    
+    leaderboardForm: document.getElementById("leaderboardForm"),
+    leaderboardElem: document.getElementById("leaderboard"),
+};
+
 (function main () {
-    // DOM elements
-
-    const startBtn = document.getElementById("start_btn");
-    const highscoreBox = document.getElementById("highscore");
-    const grid = document.getElementById("grid");
-    const menu = document.getElementById("menu");
-
     let gameActive = false;
     let highscore = localStorage.getItem(highscoreKey) || 0;
 
-    highscoreBox.textContent = highscore;
+    DOM.highscoreBox.textContent = highscore;
     grid.innerHTML = buildGrid(WIDTH, HEIGHT);
 
+    leaderboardToDom(DOM.leaderboardElem);
     setUpBlockSize();
 
     // Start game when start button pressed
-    startBtn.onclick = () => newGame();
+    DOM.startBtn.onclick = () => newGame();
 
     // Start game when spacebar pressed
     document.addEventListener("keydown", e => {
@@ -35,9 +43,12 @@ const highscoreKey = "1aggarciasnake_highscore";
         // Don't start a new game if there already is one active
         if (gameActive) return;
 
+        DOM.leaderboardForm.onsubmit = () => false;
+        DOM.leaderboardForm.style.display = "none";
+        DOM.menu.style.display = "none";
+
         clearGrid(WIDTH, HEIGHT);
         gameActive = true;
-        document.getElementById("menu").style.display = "none";
 
         const difficulty = document.getElementById("difficulty").value;
         const snake = new Snake(START_LEN, parseInt(difficulty));
@@ -45,19 +56,30 @@ const highscoreKey = "1aggarciasnake_highscore";
 
         // Game over
         gameActive = false;
-
-        header.innerHTML = `GAME OVER (Score ${score})`;
-        startBtn.textContent = "Restart";
-        document.getElementById("menu").style.display = "flex";
-
-        // Update highscore if needed
-        if (score > highscore) {
-            highscore = score;
-            localStorage.setItem(highscoreKey, score);
-            highscoreBox.innerText = score; 
-        }
+        gameOverToDom(score, highscore);
     }
 })();
+
+function gameOverToDom(score, highscore) {
+    DOM.header.innerHTML = `GAME OVER (Score ${score})`;
+    DOM.startBtn.textContent = "Restart";
+    DOM.menu.style.display = "flex";
+
+    // Update highscore if needed
+    if (score > highscore) {
+        highscore = score;
+        localStorage.setItem(highscoreKey, score);
+        DOM.highscoreBox.innerText = score; 
+    }
+
+    if (score < MIN_LEADERBOARD_SCORE) return;
+
+    // Listen for leaderboard update
+    DOM.leaderboardForm.style.display = "flex";
+    DOM.leaderboardForm.onsubmit = e => {
+        handleLeaderbaordForm(e, score, DOM.leaderboardElem);
+    }
+}
 
 function setUpBlockSize() {
     const blockSizeElem = document.getElementById("blockSize");
