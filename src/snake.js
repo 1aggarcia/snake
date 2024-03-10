@@ -3,48 +3,11 @@ const SNAKE_CLASS = "s_block";
 const FOOD_CLASS = "f_block";
 
 const scorebox = document.getElementById("scorebox");
-const start_btn = document.getElementById("start_btn");
-const header = document.getElementById("header");
-const difficulty = document.getElementById("difficulty");
 
 const upBtn = document.getElementById("upBtn");
 const downBtn = document.getElementById("downBtn");
 const rightBtn = document.getElementById("rightBtn");
 const leftBtn = document.getElementById("leftBtn");
-
-/*
-
-Versión funcional:
-
-runSnakeGame() {
-    snake = genSnake(3)
-    xDir = 0
-    yDir = 0
-    score = 0
-    alive = T
-
-    addEventListener(changeDir)
-
-    while (alive) {
-        sleep()
-        snake = advance(xDir, yDir)
-
-        if (dead()) {
-            alive = F
-            break
-        }
-
-        if (eating()) {
-            point ++
-        }
-
-        redraw(snake)
-    }
-
-    return score;
-}
-
-*/
 
 class Snake {
     // Constructor for Snake class
@@ -60,9 +23,6 @@ class Snake {
 
     // Function holding snake vars
     async run() {
-        start_btn.disabled = true;
-        difficulty.disabled = true;
-        header.innerHTML = "Snake";
         scorebox.innerHTML = 0;
 
         for (let i = 0; i < this.blocks.length; i++) {
@@ -78,11 +38,8 @@ class Snake {
         });
 
         upBtn.onclick = () => this.direction = [-1, 0];
-
         downBtn.onclick = () => this.direction = [1, 0];
-
         rightBtn.onclick = () => this.direction = [0, 1];
-
         leftBtn.onclick = () => this.direction = [0, -1];
 
 
@@ -102,12 +59,6 @@ class Snake {
                 clear_block(tail);
             }
         }
-
-        // Game over stuff
-        header.innerHTML = "GAME OVER";
-        start_btn.innerHTML = "Restart";
-        start_btn.disabled = false;
-        difficulty.disabled = false;
 
         return this.score;
     }
@@ -222,3 +173,35 @@ function clear_block(id) {
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
+
+/*
+Versión funcional:
+
+runSnakeGame() {
+    snake = genSnake(3)
+    xDir = 0
+    yDir = 0
+    score = 0
+    alive = T
+
+    addEventListener(changeDir)
+
+    while (alive) {
+        sleep()
+        snake = advance(xDir, yDir)
+
+        if (dead()) {
+            alive = F
+            break
+        }
+
+        if (eating()) {
+            point ++
+        }
+
+        redraw(snake)
+    }
+
+    return score;
+}
+*/

@@ -5,11 +5,14 @@ const START_LEN = 3;
 
 const highscoreKey = "1aggarciasnake_highscore";
 
-const startBtn = document.getElementById("start_btn");
-const highscoreBox = document.getElementById("highscore");
-const grid = document.getElementById("grid");
-
 (function main () {
+    // DOM elements
+
+    const startBtn = document.getElementById("start_btn");
+    const highscoreBox = document.getElementById("highscore");
+    const grid = document.getElementById("grid");
+    const menu = document.getElementById("menu");
+
     let gameActive = false;
     let highscore = localStorage.getItem(highscoreKey) || 0;
 
@@ -41,8 +44,11 @@ const grid = document.getElementById("grid");
         const score = await snake.run();
 
         // Game over
-        document.getElementById("menu").style.display = "flex";
         gameActive = false;
+
+        header.innerHTML = `GAME OVER (Score ${score})`;
+        startBtn.textContent = "Restart";
+        document.getElementById("menu").style.display = "flex";
 
         // Update highscore if needed
         if (score > highscore) {
