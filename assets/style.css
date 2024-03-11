@@ -59,7 +59,9 @@ a:hover { color: #ffff00; }
 
 #leaderboard {
     overflow-y: auto;
-    height: 265px;
+    max-height: 265px;
+    text-align: center;
+    background-color: var(--fg);
 }
 
 #leaderboard table {

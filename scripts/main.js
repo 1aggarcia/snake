@@ -26,7 +26,7 @@ const DOM = {
     DOM.highscoreBox.textContent = highscore;
     grid.innerHTML = buildGrid(WIDTH, HEIGHT);
 
-    leaderboardToDom(DOM.leaderboardElem);
+    leaderboardRef.fetchData();
     setUpBlockSize();
 
     // Start game when start button pressed
