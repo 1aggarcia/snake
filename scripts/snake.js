@@ -170,8 +170,8 @@ function clear_block(id) {
 }
 
 // Delay time
-function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
+function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 /*

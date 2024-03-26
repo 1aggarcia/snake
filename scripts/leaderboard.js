@@ -1,8 +1,8 @@
 const MIN_LEADERBOARD_SCORE = 250;
 const PANTRY_ENDPOINT = "https://getpantry.cloud/apiv1/pantry";
 
-const I = 2 * 2 * 2 + 1;
-const F = 61;
+const DEV_MODE = false;
+const LEADERBOARD_BASKET = DEV_MODE ? "testLeaderboard" : "leaderboard";
 
 /** 
  * @typedef ScoreEntry
@@ -19,14 +19,29 @@ class ExternalLeaderboard {
         this.#parentElem = parentElem;
     }
 
+    /**
+     * Fetch the leaderboard data from Pantry, update the bound parent element
+     * in the DOM.
+     * On failure, a "Try Again" button is provided in the parent element.
+     * @returns true if sucessful, false otherwise
+     */
     async fetchData() {
-        this.#parentElem.innerHTML = "Fetching leaderboard...";
+        this.#parentElem.innerHTML = "<p>Fetching leaderboard...<p>";
         try {
-            const response = await fetch(getPantryUri() + "/basket/leaderboard");
+            const response = await fetch(getPantryUri() + "/basket/" + LEADERBOARD_BASKET);
 
-            if (!response.ok) {
-                console.log("No leaderboard saved");
+            if (response.status === 400) {
                 this.renderToDom();
+                return true;
+            }
+            if (!response.ok) {
+                this.#parentElem.innerHTML =
+                    `<p>Failed to fetch leaderboard: ${response.status}</p>`;
+
+                const btn = append(this.#parentElem, "button");
+                btn.textContent = "Try Again";
+                btn.onclick = () => this.fetchData();
+
                 return false;
             }
 
@@ -37,38 +52,55 @@ class ExternalLeaderboard {
             this.renderToDom();
             return true;
         } catch (error) {
-            this.#parentElem.innerHTML = error;
+            this.#parentElem.innerHTML = `<p>${error}</p>`;
             return false;
         }
     }
 
-    async push(username, score) {
+    async addEntry(username, score) {
         // Try to get the freshest data possible
-        if (!await this.fetchData()) return false;
-
+        if (!await this.fetchData()){
+            return false;
+        }
+        this.#parentElem.innerHTML = "<p>Saving new score...</p>"
         // Technically a data race could occur between these two calls to
         // fetch, although Pantry won't allow more than 2 requests per second
 
-        this.#leaderboard.push({ username: username, score: score })
-        const response = await fetch(getPantryUri() + "/basket/leaderboard", {
+        const newLeaderboard = this.#leaderboard.concat(
+            [{ username: username, score: score }]
+        );
+
+        const response = await fetch(
+            getPantryUri() + "/basket/" + LEADERBOARD_BASKET, {
             method: "POST",
             headers: { "Content-type": "application/json; charset=UTF-8"},
-            body: JSON.stringify({ entries: this.#leaderboard })
+            body: JSON.stringify({ entries: newLeaderboard })
         });
 
         if (!response.ok) {
-            console.error("POST request failed");
-            this.#parentElem.innerHTML = "Failed to update leaderboard";
+            this.#parentElem.innerHTML =
+            `<p>Failed to update leaderboard: ${response.status}</p>`;
+
+            const btn = append(this.#parentElem, "button");
+            btn.onclick = () => this.addEntry(username, score);
+            btn.textContent = "Try Again";
+
             return false;
         }
 
-        console.log("Saved");
+        console.log(`Saved: ${username} (${score})`);
+        this.#leaderboard = newLeaderboard;
         this.renderToDom();
 
         return true;
     }
 
     renderToDom() {
+        if (this.#leaderboard.length === 0) {
+            this.#parentElem.innerHTML = "<p>No Entries Found</p>";
+            return;
+        }
+
         this.#leaderboard.sort((a, b) => b.score - a.score);
 
         this.#parentElem.innerHTML = "";
@@ -91,7 +123,7 @@ class ExternalLeaderboard {
     }
 }
 
-const leaderboardRef = new ExternalLeaderboard(document.getElementById("leaderboard"));
+const I = 2 * 2 * 2 + 1;
 
 /**
  * Create a new HTML element, append it to the parent
@@ -131,10 +163,12 @@ function handleLeaderbaordForm(e, score) {
         alert(`Name must be between ${USERNAME_MIN}-${USERNAME_MAX} characters`);
         return;
     }
-    leaderboardRef.push(name, score);
+    leaderboardRef.addEntry(name, score);
 
     e.target.reset();
     // Disallow more than one entry per game
     e.target.onsubmit = () => false;
     e.target.style.display = "none";
 }
+
+const leaderboardRef = new ExternalLeaderboard(document.getElementById("leaderboard"));

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>Snake v2024.0216</title>
+    <title>Snake v2024.0326</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="assets/style.css"/>
@@ -20,8 +20,8 @@
     <div id="leaderboard"></div>
 
     <form id="leaderboardForm" onsubmit="return false" style="display: none;">
-        <label>Name:</label>
-        <input type="text" name="name" style="margin: 0px 10px;" autocomplete>
+        <label for="leaderboardName">Name:</label>
+        <input type="text" name="name" id="leaderboardName" style="margin: 0px 10px;" autocomplete>
         <button type="submit">Submit Score</button>
     </form>
 
@@ -45,6 +45,7 @@
 </div>
 
 <main>
+    <div class="spacing"></div>
     <table class="grid" id="grid">
     </table>
 
@@ -64,8 +65,10 @@
         &nbsp;
         <a href="https://bit.ly/3FiO7ka" target="_blank">Don't click this link</a> 
     </footer>
+    <div class="spacing"></div>
 </main>
 
+<script>const F = 61;</script>
 <script src="scripts/leaderboard.js"></script>
 <script src="scripts/snake.js"></script>
 <script src="scripts/main.js"></script>

@@ -17,10 +17,13 @@ const DOM = {
     
     leaderboardForm: document.getElementById("leaderboardForm"),
     leaderboardElem: document.getElementById("leaderboard"),
+
+    leaderboardText: document.getElementById("leaderboardName"),
 };
 
-(function main () {
+(function main() {
     let gameActive = false;
+    let isTyping = false;
     let highscore = localStorage.getItem(highscoreKey) || 0;
 
     DOM.highscoreBox.textContent = highscore;
@@ -34,10 +37,14 @@ const DOM = {
 
     // Start game when spacebar pressed
     document.addEventListener("keydown", e => {
-        if (!gameActive && e.code == "Space") {
+        if (e.code == "Space" && !isTyping && !gameActive) {
             newGame();
         }
     });
+
+    DOM.leaderboardText.addEventListener("focus", () => isTyping = true);
+
+    DOM.leaderboardText.addEventListener("blur", () => isTyping = false);
 
     async function newGame() {
         // Don't start a new game if there already is one active
@@ -72,12 +79,12 @@ function gameOverToDom(score, highscore) {
         DOM.highscoreBox.innerText = score; 
     }
 
-    if (score < MIN_LEADERBOARD_SCORE) return;
-
-    // Listen for leaderboard update
-    DOM.leaderboardForm.style.display = "flex";
-    DOM.leaderboardForm.onsubmit = e => {
-        handleLeaderbaordForm(e, score, DOM.leaderboardElem);
+    if (score >= MIN_LEADERBOARD_SCORE) {
+        // Listen for leaderboard update
+        DOM.leaderboardForm.style.display = "flex";
+        DOM.leaderboardForm.onsubmit = e => {
+            handleLeaderbaordForm(e, score, DOM.leaderboardElem);
+        }
     }
 }
 
