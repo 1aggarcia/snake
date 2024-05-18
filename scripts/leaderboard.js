@@ -11,12 +11,13 @@ const LEADERBOARD_BASKET = DEV_MODE ? "testLeaderboard" : "leaderboard";
  */
 
 /** Bind a connection from an external leaderboard API to a DOM element*/
-class ExternalLeaderboard {
-    #leaderboard = [];
+class CloudLeaderboard {
     #parentElem;
+    #cloudStore;
 
-    constructor(parentElem) {
+    constructor(parentElem, cloudStore) {
         this.#parentElem = parentElem;
+        this.#cloudStore = cloudStore;
     }
 
     /**
@@ -25,101 +26,61 @@ class ExternalLeaderboard {
      * On failure, a "Try Again" button is provided in the parent element.
      * @returns true if sucessful, false otherwise
      */
-    async fetchData() {
+    async refresh() {
         this.#parentElem.innerHTML = "<p>Fetching leaderboard...<p>";
         try {
-            const response = await fetch(getPantryUri() + "/basket/" + LEADERBOARD_BASKET);
-
-            if (response.status === 400) {
-                this.renderToDom();
-                return true;
-            }
-            if (!response.ok) {
-                this.#parentElem.innerHTML =
-                    `<p>Failed to fetch leaderboard: ${response.status}</p>`;
-
-                const btn = append(this.#parentElem, "button");
-                btn.textContent = "Try Again";
-                btn.onclick = () => this.fetchData();
-
-                return false;
-            }
-
-            const json = await response.json();
-            // check elems, sort
-
-            this.#leaderboard = json.entries;
-            this.renderToDom();
+            const snapshot = await this.#cloudStore.fetchData(LEADERBOARD_BASKET);
+            renderToDom(snapshot, this.#parentElem);
             return true;
         } catch (error) {
             this.#parentElem.innerHTML = `<p>${error}</p>`;
+
+            const btn = append(this.#parentElem, "button");
+            btn.textContent = "Try Again";
+            btn.onclick = () => this.refresh();
+
             return false;
         }
     }
 
     async addEntry(username, score) {
-        // Try to get the freshest data possible
-        if (!await this.fetchData()){
-            return false;
-        }
         this.#parentElem.innerHTML = "<p>Saving new score...</p>"
-        // Technically a data race could occur between these two calls to
-        // fetch, although Pantry won't allow more than 2 requests per second
 
-        const newLeaderboard = this.#leaderboard.concat(
-            [{ username: username, score: score }]
-        );
-
-        const response = await fetch(
-            getPantryUri() + "/basket/" + LEADERBOARD_BASKET, {
-            method: "POST",
-            headers: { "Content-type": "application/json; charset=UTF-8"},
-            body: JSON.stringify({ entries: newLeaderboard })
-        });
-
-        if (!response.ok) {
-            this.#parentElem.innerHTML =
-            `<p>Failed to update leaderboard: ${response.status}</p>`;
-
-            const btn = append(this.#parentElem, "button");
-            btn.onclick = () => this.addEntry(username, score);
-            btn.textContent = "Try Again";
-
+        if (!await this.#cloudStore.add({ username, score }, LEADERBOARD_BASKET)) {
             return false;
         }
 
         console.log(`Saved: ${username} (${score})`);
-        this.#leaderboard = newLeaderboard;
-        this.renderToDom();
+        await this.refresh();
 
         return true;
     }
+}
 
-    renderToDom() {
-        if (this.#leaderboard.length === 0) {
-            this.#parentElem.innerHTML = "<p>No Entries Found</p>";
-            return;
-        }
+function renderToDom(leaderboard, elem) {
+    if (leaderboard.length === 0) {
+        elem.innerHTML = "<p>No Entries Found</p>";
+        return;
+    }
 
-        this.#leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard.sort((a, b) => b.score - a.score);
 
-        this.#parentElem.innerHTML = "";
-        const table = append(this.#parentElem, "table");
-        const header = append(table, "tr");
+    elem.innerHTML = "";
+    const table = append(elem, "table");
+    const header = append(table, "tr");
 
-        append(header, "th").textContent = "Rank"
-        append(header, "th").textContent = "Player";
-        append(header, "th").textContent = "Score";
+    append(header, "th").textContent = "Rank"
+    append(header, "th").textContent = "Player";
+    append(header, "th").textContent = "Score";
 
-        let count = 1;
-        for (const entry of this.#leaderboard) {
-            const row = append(table, "tr");
+    let count = 1;
+    for (const entry of leaderboard) {
+        const row = append(table, "tr");
 
-            append(row, "td").textContent = count;
-            append(row, "td").textContent = entry.username;
-            append(row, "td").textContent = entry.score;
-            count++;
-        }
+        append(row, "td").textContent = count;
+        append(row, "td").textContent = entry.username;
+        append(row, "td").textContent = entry.score;
+        count++;
     }
 }
 
@@ -171,4 +132,44 @@ function handleLeaderbaordForm(e, score) {
     e.target.style.display = "none";
 }
 
-const leaderboardRef = new ExternalLeaderboard(document.getElementById("leaderboard"));
+const pantryStore = {
+    fetchData: async (tableName) => {
+        const response =
+            await fetch(getPantryUri() + "/basket/" + tableName);
+
+        if (response.status === 400) {
+            return [];
+        }
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+
+        const json = await response.json();
+        // check elems, sort
+
+        return json.entries;
+    },
+
+    add: async ({username, score}, tableName) => {
+        const entries = await pantryStore.fetchData(tableName);
+        const newEntries = entries.concat(
+            [{ username: username, score: score }]
+        );
+
+        // Technically a data race could occur between these two calls to
+        // fetch, although Pantry won't allow more than 2 requests per second
+
+        const response = await fetch(
+            getPantryUri() + "/basket/" + tableName, {
+            method: "POST",
+            headers: { "Content-type": "application/json; charset=UTF-8"},
+            body: JSON.stringify({ entries: newEntries })
+        });
+
+        return response.ok;
+    }
+}
+
+const leaderboardRef = new CloudLeaderboard(
+    document.getElementById("leaderboard"), pantryStore
+);
